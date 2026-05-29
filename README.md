@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 # YourCars - Django Car Showroom Application
 
 A complete Django web application for a car showroom with test drive booking functionality, user authentication, and SMS notifications.
@@ -165,3 +166,6 @@ After running `createsuperuser`, use your chosen credentials to access the admin
 ## License
 
 MIT License
+=======
+# itb-cars1
+>>>>>>> af113c6e67006bbbfcd7aff8b7e0ac75140ec225
