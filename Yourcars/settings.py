@@ -20,11 +20,7 @@ SECRET_KEY = os.getenv(
 DEBUG = False
 
 # ALLOWED HOSTS
-ALLOWED_HOSTS = [
-    'django-yourcars.onrender.com',
-    'localhost',
-    '127.0.0.1',
-]
+ALLOWED_HOSTS = ['*']
 
 # CSRF TRUSTED ORIGINS
 CSRF_TRUSTED_ORIGINS = [
