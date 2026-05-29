@@ -1,0 +1,306 @@
+{% extends 'showroom/base.html' %}
+{% load static %}
+
+{% block title %}{{ car.brand.name }} {{ car.name }}{% endblock %}
+
+{% block content %}
+<style>
+    .detail-hero {
+        background: linear-gradient(135deg, #0f172a, #1e293b);
+        padding: 2rem 0;
+        margin-bottom: 2rem;
+    }
+
+    .breadcrumb-custom .breadcrumb-item a {
+        color: #94a3b8;
+        text-decoration: none;
+        font-size: 0.85rem;
+    }
+
+    .breadcrumb-custom .breadcrumb-item.active {
+        color: #fff;
+        font-weight: 600;
+    }
+
+    .breadcrumb-custom .breadcrumb-item + .breadcrumb-item::before {
+        color: #64748b;
+    }
+
+    .main-image-wrap {
+        border-radius: 20px;
+        overflow: hidden;
+        box-shadow: 0 20px 40px rgba(0,0,0,0.15);
+        position: relative;
+    }
+
+    .main-image-wrap img {
+        width: 100%;
+        height: 450px;
+        object-fit: cover;
+        display: block;
+    }
+
+    .image-badge {
+        position: absolute;
+        top: 20px;
+        left: 20px;
+        background: rgba(15,23,42,0.85);
+        backdrop-filter: blur(6px);
+        color: #fff;
+        padding: 0.5rem 1rem;
+        border-radius: 10px;
+        font-weight: 600;
+    }
+
+    .price-box {
+        background: linear-gradient(135deg, #3b82f6, #2563eb);
+        color: #fff;
+        border-radius: 16px;
+        padding: 2rem;
+        text-align: center;
+    }
+
+    .price-box .price-label {
+        font-size: 0.85rem;
+        opacity: 0.8;
+        margin-bottom: 0.25rem;
+    }
+
+    .price-box .price-value {
+        font-size: 2.5rem;
+        font-weight: 800;
+    }
+
+    .info-card {
+        background: #fff;
+        border: 1px solid #e2e8f0;
+        border-radius: 14px;
+        padding: 1.5rem;
+    }
+
+    .info-card h6 {
+        font-weight: 700;
+        color: #0f172a;
+        font-size: 0.9rem;
+        margin-bottom: 1rem;
+    }
+
+    .info-row {
+        display: flex;
+        justify-content: space-between;
+        padding: 0.75rem 0;
+        border-bottom: 1px solid #f1f5f9;
+    }
+
+    .info-row:last-child {
+        border-bottom: none;
+    }
+
+    .info-row .label {
+        color: #64748b;
+        font-size: 0.875rem;
+    }
+
+    .info-row .value {
+        font-weight: 600;
+        color: #0f172a;
+        font-size: 0.875rem;
+    }
+
+    .btn-book-cta {
+        display: block;
+        width: 100%;
+        padding: 1rem;
+        border-radius: 12px;
+        font-weight: 700;
+        font-size: 1rem;
+        border: none;
+        background: linear-gradient(135deg, #3b82f6, #2563eb);
+        color: #fff;
+        transition: all 0.2s;
+        text-decoration: none;
+        text-align: center;
+    }
+
+    .btn-book-cta:hover {
+        background: linear-gradient(135deg, #2563eb, #1d4ed8);
+        transform: translateY(-2px);
+        box-shadow: 0 8px 20px rgba(59,130,246,0.3);
+        color: #fff;
+    }
+
+    .description-box {
+        background: #fff;
+        border: 1px solid #e2e8f0;
+        border-radius: 14px;
+        padding: 2rem;
+    }
+
+    .related-card {
+        border: 1px solid #e2e8f0;
+        border-radius: 12px;
+        overflow: hidden;
+        transition: all 0.2s;
+        background: #fff;
+    }
+
+    .related-card:hover {
+        transform: translateY(-4px);
+        box-shadow: 0 8px 16px rgba(0,0,0,0.08);
+    }
+
+    .related-card img {
+        width: 100%;
+        height: 140px;
+        object-fit: cover;
+    }
+
+    .related-card .card-body {
+        padding: 1rem;
+    }
+</style>
+
+<div class="detail-hero">
+    <div class="container">
+        <nav aria-label="breadcrumb" class="breadcrumb-custom">
+            <ol class="breadcrumb mb-0">
+                <li class="breadcrumb-item"><a href="{% url 'home' %}"><i class="bi bi-house-door me-1"></i>Home</a></li>
+                <li class="breadcrumb-item"><a href="{% url 'car_list' %}">All Cars</a></li>
+                <li class="breadcrumb-item active">{{ car.brand.name }} {{ car.name }}</li>
+            </ol>
+        </nav>
+    </div>
+</div>
+
+<div class="container">
+    <div class="row g-4">
+        <!-- Main Image -->
+        <div class="col-lg-8">
+            <div class="main-image-wrap">
+                {% if car.image %}
+                <img src="{{ car.image.url }}" alt="{{ car }}">
+                {% else %}
+                <img src="{% static 'showroom/img/placeholder.svg' %}" alt="{{ car }}">
+                {% endif %}
+                <span class="image-badge"><i class="bi bi-tag me-1"></i>{{ car.brand.name }}</span>
+            </div>
+
+            <!-- Description -->
+            <div class="description-box mt-4">
+                <h4 class="fw-bold mb-3" style="color:#0f172a;">About This Vehicle</h4>
+                <p class="text-muted" style="line-height:1.8;">{{ car.description }}</p>
+                <hr class="my-4" style="border-color:#e2e8f0;">
+                <div class="row text-center">
+                    <div class="col-4">
+                        <div class="fw-bold fs-4" style="color:#3b82f6;">{{ car.brand.name }}</div>
+                        <small class="text-muted">Brand</small>
+                    </div>
+                    <div class="col-4">
+                        <div class="fw-bold fs-4" style="color:#10b981;">{{ car.name }}</div>
+                        <small class="text-muted">Model</small>
+                    </div>
+                    <div class="col-4">
+                        <div class="fw-bold fs-4" style="color:#f59e0b;">{{ car.date|date:"Y" }}</div>
+                        <small class="text-muted">Listed</small>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Related Cars -->
+            {% if related_cars %}
+            <div class="mt-5">
+                <h4 class="fw-bold mb-4" style="color:#0f172a;">You May Also Like</h4>
+                <div class="row g-3">
+                    {% for related in related_cars %}
+                    <div class="col-md-4">
+                        <a href="{% url 'car_detail' related.id %}" class="text-decoration-none">
+                            <div class="related-card">
+                                {% if related.image %}
+                                <img src="{{ related.image.url }}" alt="{{ related }}">
+                                {% else %}
+                                <img src="{% static 'showroom/img/placeholder.svg' %}" alt="{{ related }}">
+                                {% endif %}
+                                <div class="card-body">
+                                    <h6 class="fw-bold mb-1" style="color:#0f172a; font-size:0.95rem;">{{ related.name }}</h6>
+                                    <span class="fw-bold" style="color:#10b981;">${{ related.price|floatformat:0 }}</span>
+                                </div>
+                            </div>
+                        </a>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+            {% endif %}
+        </div>
+
+        <!-- Sidebar -->
+        <div class="col-lg-4">
+            <div class="price-box mb-4">
+                <div class="price-label">Starting Price</div>
+                <div class="price-value">${{ car.price|floatformat:0 }}</div>
+                <div class="mt-3" style="font-size:0.85rem; opacity:0.8;">
+                    <i class="bi bi-check-circle me-1"></i> Verified by YourCars
+                </div>
+            </div>
+
+            <div class="info-card mb-4">
+                <h6><i class="bi bi-info-circle me-2 text-primary"></i>Vehicle Details</h6>
+                <div class="info-row">
+                    <span class="label">Brand</span>
+                    <span class="value">{{ car.brand.name }}</span>
+                </div>
+                <div class="info-row">
+                    <span class="label">Model</span>
+                    <span class="value">{{ car.name }}</span>
+                </div>
+                <div class="info-row">
+                    <span class="label">Price</span>
+                    <span class="value" style="color:#10b981;">${{ car.price }}</span>
+                </div>
+                <div class="info-row">
+                    <span class="label">Tagline</span>
+                    <span class="value">{{ car.title }}</span>
+                </div>
+                <div class="info-row">
+                    <span class="label">Listed On</span>
+                    <span class="value">{{ car.date|date:"M d, Y" }}</span>
+                </div>
+            </div>
+
+            {% if car.brand.has_showroom %}
+            <div class="info-card mb-4" style="border-color:#f59e0b;">
+                <h6><i class="bi bi-geo-alt-fill me-2" style="color:#f59e0b;"></i>Showroom Location</h6>
+                <div class="mt-2">
+                    <p class="mb-1 fw-bold">{{ car.brand.name }} Showroom</p>
+                    <p class="mb-2 text-muted" style="font-size:0.875rem;">{{ car.brand.showroom_location|linebreaksbr }}</p>
+                    {% if car.brand.showroom_city %}
+                    <p class="mb-1" style="font-size:0.875rem;"><i class="bi bi-building me-1 text-muted"></i>{{ car.brand.showroom_city }}</p>
+                    {% endif %}
+                    {% if car.brand.showroom_phone %}
+                    <p class="mb-0" style="font-size:0.875rem;"><i class="bi bi-telephone me-1 text-muted"></i>{{ car.brand.showroom_phone }}</p>
+                    {% endif %}
+                </div>
+            </div>
+            {% endif %}
+
+            <!-- Booking CTA -->
+            <div class="info-card">
+                <h6><i class="bi bi-calendar-check me-2 text-primary"></i>Book a Test Drive</h6>
+                <p class="text-muted mb-3" style="font-size:0.875rem;">Experience this vehicle firsthand. Fill in your details to schedule a test drive.</p>
+                {% if user.is_authenticated %}
+                <a href="{% url 'book_test_drive' car.id %}" class="btn-book-cta">
+                    <i class="bi bi-calendar-check me-2"></i>Book Test Drive Now
+                </a>
+                {% else %}
+                <a href="{% url 'login' %}?next={% url 'book_test_drive' car.id %}" class="btn-book-cta">
+                    <i class="bi bi-box-arrow-in-right me-2"></i>Login to Book
+                </a>
+                {% endif %}
+                <div class="text-center mt-3">
+                    <small class="text-muted"><i class="bi bi-shield-check me-1"></i>Free cancellation anytime</small>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

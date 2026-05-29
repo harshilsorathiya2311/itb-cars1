@@ -1,0 +1,242 @@
+{% extends 'showroom/admin/base.html' %}
+
+{% block title %}Dashboard{% endblock %}
+
+{% block page_title %}Dashboard{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <h2>Welcome back, {{ request.user.get_full_name|default:request.user.username }}!</h2>
+    <p>Here's what's happening with your showroom today.</p>
+</div>
+
+<div class="row g-4 mb-4">
+    <div class="col-xl-3 col-md-6">
+        <div class="stat-card stat-blue">
+            <div class="d-flex justify-content-between align-items-start">
+                <div>
+                    <div class="stat-value">{{ total_cars }}</div>
+                    <div class="stat-label mt-1">Total Cars</div>
+                </div>
+                <div class="stat-icon"><i class="bi bi-car-front"></i></div>
+            </div>
+        </div>
+    </div>
+    <div class="col-xl-3 col-md-6">
+        <div class="stat-card stat-green">
+            <div class="d-flex justify-content-between align-items-start">
+                <div>
+                    <div class="stat-value">{{ total_brands }}</div>
+                    <div class="stat-label mt-1">Brands</div>
+                </div>
+                <div class="stat-icon"><i class="bi bi-bookmark"></i></div>
+            </div>
+        </div>
+    </div>
+    <div class="col-xl-3 col-md-6">
+        <div class="stat-card stat-purple">
+            <div class="d-flex justify-content-between align-items-start">
+                <div>
+                    <div class="stat-value">{{ total_users }}</div>
+                    <div class="stat-label mt-1">Registered Users</div>
+                </div>
+                <div class="stat-icon"><i class="bi bi-people"></i></div>
+            </div>
+        </div>
+    </div>
+    <div class="col-xl-3 col-md-6">
+        <div class="stat-card stat-orange">
+            <div class="d-flex justify-content-between align-items-start">
+                <div>
+                    <div class="stat-value">{{ total_bookings }}</div>
+                    <div class="stat-label mt-1">Total Bookings</div>
+                </div>
+                <div class="stat-icon"><i class="bi bi-calendar-check"></i></div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row g-4 mb-4">
+    <div class="col-md-4">
+        <div class="stat-card stat-yellow" style="--bs-border-radius: 12px;">
+            <div style="position:absolute;top:0;left:0;right:0;height:3px;background:linear-gradient(90deg,#f59e0b,#fbbf24);"></div>
+            <div class="d-flex justify-content-between align-items-start">
+                <div>
+                    <div class="stat-value" style="color:#f59e0b;">{{ pending_bookings }}</div>
+                    <div class="stat-label mt-1">Pending Approval</div>
+                </div>
+                <div class="stat-icon" style="background:rgba(245,158,11,0.1);color:#f59e0b;"><i class="bi bi-clock"></i></div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="stat-card" style="position:relative;">
+            <div style="position:absolute;top:0;left:0;right:0;height:3px;background:linear-gradient(90deg,#10b981,#34d399);"></div>
+            <div class="d-flex justify-content-between align-items-start">
+                <div>
+                    <div class="stat-value" style="color:#10b981;">{{ approved_bookings }}</div>
+                    <div class="stat-label mt-1">Approved</div>
+                </div>
+                <div class="stat-icon" style="background:rgba(16,185,129,0.1);color:#10b981;"><i class="bi bi-check-circle"></i></div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="stat-card" style="position:relative;">
+            <div style="position:absolute;top:0;left:0;right:0;height:3px;background:linear-gradient(90deg,#ef4444,#f87171);"></div>
+            <div class="d-flex justify-content-between align-items-start">
+                <div>
+                    <div class="stat-value" style="color:#ef4444;">{{ rejected_bookings }}</div>
+                    <div class="stat-label mt-1">Rejected</div>
+                </div>
+                <div class="stat-icon" style="background:rgba(239,68,68,0.1);color:#ef4444;"><i class="bi bi-x-circle"></i></div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row g-4">
+    <div class="col-lg-8">
+        <div class="admin-card">
+            <div class="card-header">
+                <h5><i class="bi bi-calendar2-check me-2 text-primary"></i>Recent Bookings</h5>
+                <a href="{% url 'admin_manage_bookings' %}" class="btn btn-admin btn-admin-outline btn-sm">
+                    View All <i class="bi bi-arrow-right ms-1"></i>
+                </a>
+            </div>
+            <div class="table-responsive">
+                <table class="admin-table">
+                    <thead>
+                        <tr>
+                            <th>User</th>
+                            <th>Vehicle</th>
+                            <th>Date</th>
+                            <th>Status</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for booking in recent_bookings %}
+                        <tr>
+                            <td>
+                                <div class="d-flex align-items-center gap-2">
+                                    <div class="rounded-circle d-flex align-items-center justify-content-center" style="width:32px;height:32px;background:rgba(59,130,246,0.1);color:#3b82f6;font-weight:600;font-size:0.75rem;">
+                                        {{ booking.user.username|make_list|first|upper }}
+                                    </div>
+                                    <div>
+                                        <div class="fw-semibold">{{ booking.user.username }}</div>
+                                        <small class="text-muted">{{ booking.user.email|default:"No email" }}</small>
+                                    </div>
+                                </div>
+                            </td>
+                            <td>
+                                <div class="d-flex align-items-center gap-2">
+                                    {% if booking.car.image %}
+                                    <img src="{{ booking.car.image.url }}" width="55" height="38" style="object-fit:cover;border-radius:6px;" alt="{{ booking.car }}">
+                                    {% endif %}
+                                    <div class="fw-semibold">{{ booking.car.brand.name }} {{ booking.car.name }}</div>
+                                </div>
+                            </td>
+                            <td class="text-muted">{{ booking.booking_date|date:"M d, Y" }}</td>
+                            <td>
+                                {% if booking.status == 'Pending' %}
+                                <span class="badge bg-warning text-dark">Pending</span>
+                                {% elif booking.status == 'Approved' %}
+                                <span class="badge" style="background:rgba(16,185,129,0.1);color:#10b981;">Approved</span>
+                                {% else %}
+                                <span class="badge" style="background:rgba(239,68,68,0.1);color:#ef4444;">Rejected</span>
+                                {% endif %}
+                            </td>
+                        </tr>
+                        {% empty %}
+                        <tr><td colspan="4" class="text-center py-5">
+                            <i class="bi bi-calendar-x text-muted" style="font-size:3rem;"></i>
+                            <p class="text-muted mt-2">No bookings yet</p>
+                        </td></tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-lg-4">
+        <div class="admin-card mb-4">
+            <div class="card-header">
+                <h5><i class="bi bi-bookmark me-2 text-primary"></i>Top Brands</h5>
+            </div>
+            <div class="card-body p-0">
+                <div class="list-group list-group-flush">
+                    {% for brand in brand_car_count %}
+                    <div class="list-group-item d-flex justify-content-between align-items-center px-4 py-3 border-0 border-bottom" style="border-color:#f1f5f9 !important;">
+                        <div class="d-flex align-items-center gap-3">
+                            <div class="rounded-2 d-flex align-items-center justify-content-center" style="width:36px;height:36px;background:rgba(99,102,241,0.1);color:#6366f1;font-weight:700;font-size:0.75rem;">
+                                {{ forloop.counter }}
+                            </div>
+                            <span class="fw-semibold">{{ brand.name }}</span>
+                        </div>
+                        <span class="badge" style="background:#f1f5f9;color:#475569;">{{ brand.car_count }} car{{ brand.car_count|pluralize }}</span>
+                    </div>
+                    {% empty %}
+                    <div class="text-center py-4 text-muted">No brands yet</div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+
+        <div class="admin-card">
+            <div class="card-header">
+                <h5><i class="bi bi-car-front me-2 text-primary"></i>Latest Cars</h5>
+                <a href="{% url 'admin_manage_cars' %}" class="btn btn-admin btn-admin-outline btn-sm">View All</a>
+            </div>
+            <div class="card-body p-0">
+                <div class="list-group list-group-flush">
+                    {% for car in recent_cars %}
+                    <div class="list-group-item d-flex align-items-center gap-3 px-4 py-3 border-0 border-bottom" style="border-color:#f1f5f9 !important;">
+                        {% if car.image %}
+                        <img src="{{ car.image.url }}" width="60" height="40" style="object-fit:cover;border-radius:6px;" alt="{{ car }}">
+                        {% else %}
+                        <div class="d-flex align-items-center justify-content-center bg-light rounded-2" style="width:60px;height:40px;">
+                            <i class="bi bi-image text-muted"></i>
+                        </div>
+                        {% endif %}
+                        <div class="flex-grow-1 min-w-0">
+                            <div class="fw-semibold" style="font-size:0.875rem;">{{ car.brand.name }} {{ car.name }}</div>
+                            <small class="text-muted">${{ car.price }}</small>
+                        </div>
+                    </div>
+                    {% empty %}
+                    <div class="text-center py-4 text-muted">No cars yet</div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+
+        <div class="admin-card">
+            <div class="card-header">
+                <h5><i class="bi bi-people me-2 text-primary"></i>Recent Users</h5>
+                <a href="{% url 'admin_manage_users' %}" class="btn btn-admin btn-admin-outline btn-sm">View All</a>
+            </div>
+            <div class="card-body p-0">
+                <div class="list-group list-group-flush">
+                    {% for user in recent_users %}
+                    <div class="list-group-item d-flex justify-content-between align-items-center px-4 py-3 border-0 border-bottom" style="border-color:#f1f5f9 !important;">
+                        <div class="d-flex align-items-center gap-3">
+                            <div class="rounded-circle d-flex align-items-center justify-content-center" style="width:36px;height:36px;background:rgba(16,185,129,0.1);color:#10b981;font-weight:600;font-size:0.75rem;">
+                                {{ user.username|make_list|first|upper }}
+                            </div>
+                            <div>
+                                <div class="fw-semibold" style="font-size:0.875rem;">{{ user.username }}</div>
+                                <small class="text-muted">{{ user.date_joined|date:"M d, Y" }}</small>
+                            </div>
+                        </div>
+                    </div>
+                    {% empty %}
+                    <div class="text-center py-4 text-muted">No users yet</div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

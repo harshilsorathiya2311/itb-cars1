@@ -1,0 +1,241 @@
+{% extends 'showroom/base.html' %}
+{% load static %}
+
+{% block title %}Showroom Locations - All Brands{% endblock %}
+
+{% block content %}
+<style>
+    .locations-hero {
+        background: linear-gradient(135deg, #0f172a, #1e293b);
+        padding: 3rem 0;
+        margin-bottom: 3rem;
+    }
+
+    .brand-showroom-card {
+        border: none;
+        border-radius: 20px;
+        overflow: hidden;
+        box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05), 0 2px 4px -2px rgba(0,0,0,0.05);
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        background: #fff;
+        height: 100%;
+        border-top: 4px solid #3b82f6;
+    }
+
+    .brand-showroom-card:hover {
+        transform: translateY(-8px);
+        box-shadow: 0 25px 50px -12px rgba(0,0,0,0.15);
+    }
+
+    .brand-header {
+        background: linear-gradient(135deg, #f8fafc, #f1f5f9);
+        border-bottom: 1px solid #e2e8f0;
+        padding: 1.5rem;
+    }
+
+    .brand-logo {
+        width: 60px;
+        height: 60px;
+        background: linear-gradient(135deg, #3b82f6, #2563eb);
+        color: #fff;
+        border-radius: 14px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.75rem;
+        font-weight: 800;
+    }
+
+    .brand-cars-list {
+        max-height: 200px;
+        overflow-y: auto;
+    }
+
+    .brand-cars-list::-webkit-scrollbar {
+        width: 4px;
+    }
+
+    .brand-cars-list::-webkit-scrollbar-thumb {
+        background: #cbd5e1;
+        border-radius: 4px;
+    }
+
+    .car-mini-card {
+        display: flex;
+        align-items: center;
+        padding: 0.5rem;
+        border-radius: 8px;
+        transition: background 0.2s;
+        text-decoration: none;
+        color: inherit;
+    }
+
+    .car-mini-card:hover {
+        background: #f8fafc;
+        text-decoration: none;
+        color: inherit;
+    }
+
+    .car-mini-img {
+        width: 50px;
+        height: 35px;
+        object-fit: cover;
+        border-radius: 6px;
+        margin-right: 0.75rem;
+    }
+
+    .location-detail {
+        display: flex;
+        align-items: flex-start;
+        padding: 0.75rem 0;
+        border-bottom: 1px solid #f1f5f9;
+    }
+
+    .location-detail:last-of-type {
+        border-bottom: none;
+    }
+
+    .location-detail i {
+        color: #3b82f6;
+        margin-right: 0.75rem;
+        margin-top: 0.2rem;
+        font-size: 1rem;
+        width: 18px;
+    }
+
+    .location-detail div {
+        flex: 1;
+        font-size: 0.875rem;
+        color: #475569;
+        line-height: 1.5;
+    }
+
+    .no-showroom {
+        background: linear-gradient(135deg, #f8fafc, #f1f5f9);
+        border: 2px dashed #e2e8f0;
+        border-radius: 12px;
+        padding: 2rem;
+        text-align: center;
+    }
+
+    .no-showroom .brand-logo {
+        margin: 0 auto 1rem;
+        background: #e2e8f0;
+        color: #94a3b8;
+    }
+</style>
+
+<div class="locations-hero">
+    <div class="container">
+        <nav aria-label="breadcrumb" class="mb-4">
+            <ol class="breadcrumb mb-0" style="background:transparent;">
+                <li class="breadcrumb-item"><a href="{% url 'home' %}" class="text-white-50 text-decoration-none">Home</a></li>
+                <li class="breadcrumb-item active text-white">Showroom Locations</li>
+            </ol>
+        </nav>
+        <h1 class="text-white fw-bold mb-3">All Brand Showrooms</h1>
+        <p class="text-white-50 lead mb-0">Find your nearest showroom and explore available cars for test drive. Book your dream car today!</p>
+    </div>
+</div>
+
+<div class="container">
+    <div class="row g-4">
+        {% for brand in brands %}
+        <div class="col-lg-6">
+            <div class="brand-showroom-card">
+                <div class="brand-header">
+                    <div class="d-flex align-items-center justify-content-between">
+                        <div class="d-flex align-items-center">
+                            <div class="brand-logo">{{ brand.name.0|upper }}</div>
+                            <div class="ms-3">
+                                <h4 class="fw-bold mb-1" style="color:#0f172a;">{{ brand.name }}</h4>
+                                <span class="badge" style="background:rgba(59,130,246,0.1); color:#3b82f6; font-size:0.75rem;">
+                                    <i class="bi bi-car-front me-1"></i>{{ brand.cars.count }} Cars Available
+                                </span>
+                            </div>
+                        </div>
+                        <a href="{% url 'car_list' %}?brand={{ brand.id }}" class="btn btn-sm" style="background:linear-gradient(135deg,#3b82f6,#2563eb); color:#fff; border-radius:8px; font-weight:600;">
+                            View All <i class="bi bi-arrow-right ms-1"></i>
+                        </a>
+                    </div>
+                </div>
+                <div class="p-4">
+                    {% if brand.has_showroom %}
+                    <div class="mb-3">
+                        <div class="location-detail">
+                            <i class="bi bi-geo-alt-fill"></i>
+                            <div>
+                                <strong style="color:#0f172a;">Showroom Address</strong>
+                                {{ brand.showroom_location|linebreaksbr }}
+                            </div>
+                        </div>
+                        <div class="location-detail">
+                            <i class="bi bi-building"></i>
+                            <div>
+                                <strong style="color:#0f172a;">City</strong>
+                                {{ brand.showroom_city }}
+                            </div>
+                        </div>
+                        <div class="location-detail">
+                            <i class="bi bi-telephone-fill"></i>
+                            <div>
+                                <strong style="color:#0f172a;">Contact</strong>
+                                {{ brand.showroom_phone }}
+                            </div>
+                        </div>
+                    </div>
+                    {% else %}
+                    <div class="no-showroom mb-3">
+                        <div class="brand-logo">{{ brand.name.0|upper }}</div>
+                        <p class="text-muted mb-0" style="font-size:0.875rem;">Showroom location not configured yet</p>
+                    </div>
+                    {% endif %}
+
+                    {% if brand.cars.all %}
+                    <div style="border-top:1px solid #f1f5f9; padding-top:1rem;">
+                        <h6 class="fw-bold mb-2" style="color:#0f172a; font-size:0.85rem;"><i class="bi bi-car-front me-1 text-primary"></i>Available Cars</h6>
+                        <div class="brand-cars-list">
+                            {% for car in brand.cars.all %}
+                            <a href="{% url 'car_detail' car.id %}" class="car-mini-card">
+                                {% if car.image %}
+                                <img src="{{ car.image.url }}" class="car-mini-img" alt="{{ car }}">
+                                {% else %}
+                                <div class="car-mini-img d-flex align-items-center justify-content-center" style="background:#e2e8f0;">
+                                    <i class="bi bi-car-front text-muted" style="font-size:0.75rem;"></i>
+                                </div>
+                                {% endif %}
+                                <div class="flex-1">
+                                    <div class="fw-semibold" style="font-size:0.85rem; color:#0f172a;">{{ car.name }}</div>
+                                    <div style="font-size:0.75rem; color:#10b981; font-weight:600;">${{ car.price|floatformat:0 }}</div>
+                                </div>
+                                <i class="bi bi-chevron-right text-muted" style="font-size:0.75rem;"></i>
+                            </a>
+                            {% endfor %}
+                        </div>
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+
+    <div class="mt-5 mb-5">
+        <div class="card border-0 shadow-sm" style="border-radius:20px; background:linear-gradient(135deg,#eff6ff,#dbeafe);">
+            <div class="card-body p-5">
+                <div class="row align-items-center">
+                    <div class="col-lg-8">
+                        <h4 class="fw-bold mb-2" style="color:#0f172a;"><i class="bi bi-calendar-check me-2" style="color:#3b82f6;"></i>Ready to Test Drive?</h4>
+                        <p class="text-muted mb-0 fs-5">Browse our collection of {{ brands.count }} brands and book a test drive at your nearest showroom today!</p>
+                    </div>
+                    <div class="col-lg-4 text-lg-end mt-4 mt-lg-0">
+                        <a href="{% url 'car_list' %}" class="btn px-5 py-3" style="background:linear-gradient(135deg,#3b82f6,#2563eb); color:#fff; border-radius:12px; font-weight:600; font-size:1.1rem;">
+                            Browse All Cars <i class="bi bi-arrow-right ms-2"></i>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

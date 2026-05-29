@@ -1,0 +1,68 @@
+{% extends 'showroom/base.html' %}
+
+{% block title %}Book Test Drive - {{ car.brand.name }} {{ car.name }}{% endblock %}
+
+{% block content %}
+<section class="py-5">
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-lg-6">
+                <div class="card shadow">
+                    {% if car.image %}
+                    <img src="{{ car.image.url }}" class="card-img-top car-card-img" alt="{{ car }}">
+                    {% endif %}
+                    <div class="card-body p-4">
+                        <h2 class="card-title mb-3">Book Test Drive</h2>
+                        <div class="alert alert-info">
+                            <strong>Car:</strong> {{ car.brand.name }} {{ car.name }}<br>
+                            <strong>Price:</strong> ${{ car.price }}
+                        </div>
+
+                        {% if car.brand.has_showroom %}
+                        <div class="alert alert-warning border-warning">
+                            <h6 class="alert-heading"><i class="bi bi-geo-alt-fill me-2"></i>Showroom Location</h6>
+                            <hr>
+                            <p class="mb-1"><strong>{{ car.brand.name }} Showroom</strong></p>
+                            <p class="mb-1">{{ car.brand.showroom_location|linebreaksbr }}</p>
+                            {% if car.brand.showroom_city %}
+                            <p class="mb-1"><i class="bi bi-building me-1"></i>{{ car.brand.showroom_city }}</p>
+                            {% endif %}
+                            {% if car.brand.showroom_phone %}
+                            <p class="mb-0"><i class="bi bi-telephone me-1"></i>{{ car.brand.showroom_phone }}</p>
+                            {% endif %}
+                        </div>
+                        {% else %}
+                        <div class="alert alert-secondary border-secondary">
+                            <i class="bi bi-info-circle me-2"></i>
+                            <strong>{{ car.brand.name }}</strong> showroom location not configured yet. Please contact support or check the <a href="{% url 'showroom_locations' %}" class="alert-link">showrooms page</a> for details.
+                        </div>
+                        {% endif %}
+
+                        {% if existing_booking %}
+                        <div class="alert alert-warning">
+                            <i class="bi bi-exclamation-triangle"></i>
+                            You already have a booking for this car with status:
+                            <strong>{{ existing_booking.status }}</strong>
+                        </div>
+                        <a href="{% url 'my_bookings' %}" class="btn btn-primary">View My Bookings</a>
+                        {% else %}
+                        <form method="post">
+                            {% csrf_token %}
+                            <p class="text-muted">Click below to confirm your test drive booking.</p>
+                            <button type="submit" class="btn btn-primary btn-lg w-100">
+                                <i class="bi bi-calendar-check"></i> Confirm Booking
+                            </button>
+                        </form>
+                        {% endif %}
+
+                        <hr>
+                        <a href="{% url 'car_detail' car.id %}" class="btn btn-outline-secondary">
+                            <i class="bi bi-arrow-left"></i> Back to Car Details
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}

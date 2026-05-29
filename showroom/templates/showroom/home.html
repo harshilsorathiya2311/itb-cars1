@@ -1,0 +1,949 @@
+{% extends 'showroom/base.html' %}
+{% load static %}
+
+{% block title %}Home{% endblock %}
+
+{% block extra_head %}{% endblock %}
+
+{% block content %}
+<style>
+    .hero-main {
+        position: relative;
+        background: linear-gradient(135deg, #0f172a 0%, #1e293b 50%, #334155 100%);
+        min-height: 600px;
+        display: flex;
+        align-items: center;
+        overflow: hidden;
+    }
+
+    .hero-main::before {
+        content: '';
+        position: absolute;
+        top: -50%;
+        right: -20%;
+        width: 800px;
+        height: 800px;
+        background: radial-gradient(circle, rgba(59,130,246,0.15) 0%, transparent 70%);
+        border-radius: 50%;
+    }
+
+    .hero-main::after {
+        content: '';
+        position: absolute;
+        bottom: -30%;
+        left: -10%;
+        width: 600px;
+        height: 600px;
+        background: radial-gradient(circle, rgba(16,185,129,0.1) 0%, transparent 70%);
+        border-radius: 50%;
+    }
+
+    .hero-content {
+        position: relative;
+        z-index: 1;
+    }
+
+    .hero-title {
+        font-size: 3.5rem;
+        font-weight: 800;
+        line-height: 1.1;
+        margin-bottom: 1.5rem;
+    }
+
+    .hero-title span {
+        background: linear-gradient(135deg, #60a5fa, #34d399);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+    }
+
+    .hero-search {
+        background: rgba(255,255,255,0.05);
+        backdrop-filter: blur(10px);
+        border: 1px solid rgba(255,255,255,0.1);
+        border-radius: 16px;
+        padding: 1.5rem;
+        margin-top: 2rem;
+    }
+
+    .hero-search .form-control,
+    .hero-search .form-select {
+        background: rgba(255,255,255,0.08);
+        border: 1px solid rgba(255,255,255,0.15);
+        color: #fff;
+        border-radius: 10px;
+        padding: 0.75rem 1rem;
+    }
+
+    .hero-search .form-control::placeholder {
+        color: #94a3b8;
+    }
+
+    .hero-search .form-control:focus,
+    .hero-search .form-select:focus {
+        border-color: #3b82f6;
+        box-shadow: 0 0 0 3px rgba(59,130,246,0.2);
+        background: rgba(255,255,255,0.12);
+    }
+
+    .hero-search .form-select option {
+        background: #1e293b;
+        color: #fff;
+    }
+
+    .stats-bar {
+        background: #fff;
+        border-radius: 16px;
+        box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+        padding: 2rem;
+        margin-top: -50px;
+        position: relative;
+        z-index: 10;
+    }
+
+    .stat-item {
+        text-align: center;
+        padding: 1rem;
+    }
+
+    .stat-item .stat-number {
+        font-size: 2rem;
+        font-weight: 800;
+        color: #0f172a;
+        line-height: 1;
+    }
+
+    .stat-item .stat-label {
+        font-size: 0.875rem;
+        color: #64748b;
+        font-weight: 500;
+        margin-top: 0.25rem;
+    }
+
+    .section-title {
+        font-size: 2rem;
+        font-weight: 800;
+        color: #0f172a;
+        margin-bottom: 0.5rem;
+    }
+
+    .section-subtitle {
+        color: #64748b;
+        font-size: 1rem;
+    }
+
+    .car-card-premium {
+        border: none;
+        border-radius: 16px;
+        overflow: hidden;
+        box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05), 0 2px 4px -2px rgba(0,0,0,0.05);
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        background: #fff;
+        height: 100%;
+    }
+
+    .car-card-premium:hover {
+        transform: translateY(-8px);
+        box-shadow: 0 20px 25px -5px rgba(0,0,0,0.1), 0 8px 10px -6px rgba(0,0,0,0.1);
+    }
+
+    .car-card-premium .card-image-wrapper {
+        position: relative;
+        overflow: hidden;
+        height: 220px;
+    }
+
+    .car-card-premium .card-image-wrapper img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        transition: transform 0.5s;
+    }
+
+    .car-card-premium:hover .card-image-wrapper img {
+        transform: scale(1.05);
+    }
+
+    .car-card-premium .brand-badge {
+        position: absolute;
+        top: 12px;
+        left: 12px;
+        background: rgba(15,23,42,0.85);
+        backdrop-filter: blur(4px);
+        color: #fff;
+        padding: 0.35rem 0.75rem;
+        border-radius: 8px;
+        font-size: 0.75rem;
+        font-weight: 600;
+        letter-spacing: 0.5px;
+    }
+
+    .car-card-premium .price-tag {
+        position: absolute;
+        bottom: 12px;
+        right: 12px;
+        background: linear-gradient(135deg, #3b82f6, #2563eb);
+        color: #fff;
+        padding: 0.4rem 0.875rem;
+        border-radius: 10px;
+        font-size: 1rem;
+        font-weight: 700;
+    }
+
+    .car-card-premium .card-body {
+        padding: 1.25rem;
+    }
+
+    .car-card-premium .car-name {
+        font-size: 1.1rem;
+        font-weight: 700;
+        color: #0f172a;
+        margin-bottom: 0.35rem;
+    }
+
+    .car-card-premium .car-title {
+        font-size: 0.85rem;
+        color: #64748b;
+        margin-bottom: 1rem;
+    }
+
+    .car-card-premium .car-action {
+        display: flex;
+        gap: 0.5rem;
+    }
+
+    .btn-view-details {
+        flex: 1;
+        padding: 0.6rem;
+        border-radius: 10px;
+        font-weight: 600;
+        font-size: 0.85rem;
+        border: 1px solid #e2e8f0;
+        color: #475569;
+        background: transparent;
+        transition: all 0.2s;
+    }
+
+    .btn-view-details:hover {
+        background: #f8fafc;
+        border-color: #cbd5e1;
+    }
+
+    .btn-book-now {
+        flex: 1;
+        padding: 0.6rem;
+        border-radius: 10px;
+        font-weight: 600;
+        font-size: 0.85rem;
+        border: none;
+        background: linear-gradient(135deg, #3b82f6, #2563eb);
+        color: #fff;
+        transition: all 0.2s;
+    }
+
+    .btn-book-now:hover {
+        background: linear-gradient(135deg, #2563eb, #1d4ed8);
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(59,130,246,0.3);
+        color: #fff;
+    }
+
+    .brand-card {
+        background: #fff;
+        border: 1px solid #e2e8f0;
+        border-radius: 12px;
+        padding: 1.5rem;
+        text-align: center;
+        transition: all 0.2s;
+        cursor: pointer;
+        text-decoration: none;
+        display: block;
+    }
+
+    .brand-card:hover {
+        border-color: #3b82f6;
+        box-shadow: 0 4px 12px rgba(59,130,246,0.15);
+        transform: translateY(-4px);
+        text-decoration: none;
+    }
+
+    .brand-card .brand-icon {
+        width: 60px;
+        height: 60px;
+        background: linear-gradient(135deg, #f8fafc, #f1f5f9);
+        border-radius: 14px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin: 0 auto 0.75rem;
+        font-size: 1.5rem;
+        font-weight: 800;
+        color: #3b82f6;
+        transition: all 0.2s;
+    }
+
+    .brand-card:hover .brand-icon {
+        background: linear-gradient(135deg, #3b82f6, #2563eb);
+        color: #fff;
+    }
+
+    .brand-card .brand-name {
+        font-weight: 600;
+        color: #0f172a;
+        font-size: 0.95rem;
+    }
+
+    .cta-section {
+        background: linear-gradient(135deg, #0f172a, #1e293b);
+        border-radius: 24px;
+        padding: 4rem;
+        position: relative;
+        overflow: hidden;
+    }
+
+    .cta-section::before {
+        content: '';
+        position: absolute;
+        top: -50%;
+        right: -20%;
+        width: 400px;
+        height: 400px;
+        background: radial-gradient(circle, rgba(59,130,246,0.2) 0%, transparent 70%);
+        border-radius: 50%;
+    }
+
+    /* 360 Viewer */
+    .car-360-wrap {
+        perspective: 1200px;
+        position: relative;
+    }
+
+    .car-360-stage {
+        width: 100%;
+        height: 0;
+        padding-bottom: 66%;
+        position: relative;
+        perspective: 1200px;
+        border-radius: 20px;
+        cursor: grab;
+    }
+
+    .car-360-stage:active {
+        cursor: grabbing;
+    }
+
+    .car-360-box {
+        position: absolute;
+        top: 0; left: 0; right: 0; bottom: 0;
+        transform-style: preserve-3d;
+        transition: transform 0.05s linear;
+        border-radius: 20px;
+    }
+
+    .car-360-box.dragging {
+        transition: none;
+    }
+
+    .car-360-face {
+        position: absolute;
+        top: 0; left: 0; right: 0; bottom: 0;
+        backface-visibility: hidden;
+        border-radius: 20px;
+        overflow: hidden;
+        box-shadow: 0 25px 50px -12px rgba(0,0,0,0.5);
+    }
+
+    .car-360-face.front {
+        background: linear-gradient(135deg, #1e293b, #0f172a);
+    }
+
+    .car-360-face.back {
+        transform: rotateY(180deg);
+        background: linear-gradient(135deg, #0f172a, #1e293b);
+    }
+
+    .car-360-face img, .car-360-face .fallback-img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        display: block;
+        user-select: none;
+        -webkit-user-drag: none;
+    }
+
+    .car-360-face.back img {
+        transform: scaleX(-1);
+        filter: brightness(0.8) contrast(1.05);
+    }
+
+    .car-360-face .fallback-img {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: #94a3b8;
+        font-size: 1.2rem;
+        font-weight: 600;
+        flex-direction: column;
+        gap: 1rem;
+    }
+
+    .car-360-face .fallback-img i {
+        font-size: 4rem;
+        color: #3b82f6;
+        opacity: 0.5;
+    }
+
+    .car-360-badge {
+        position: absolute;
+        top: 20px;
+        right: 20px;
+        width: 64px;
+        height: 64px;
+        border-radius: 50%;
+        background: linear-gradient(135deg, #3b82f6, #2563eb);
+        color: #fff;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: 800;
+        font-size: 1.1rem;
+        box-shadow: 0 8px 30px rgba(59,130,246,0.5);
+        z-index: 10;
+        letter-spacing: -0.5px;
+        border: 2px solid rgba(255,255,255,0.2);
+    }
+
+    .car-360-reflection {
+        position: absolute;
+        bottom: -2px;
+        left: 0;
+        right: 0;
+        height: 50%;
+        background: linear-gradient(to bottom, rgba(255,255,255,0.15), transparent);
+        pointer-events: none;
+        z-index: 2;
+        border-radius: 0 0 20px 20px;
+    }
+
+    .car-360-footer {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-top: 1rem;
+        padding: 0 0.25rem;
+    }
+
+    .car-360-footer .label {
+        font-size: 0.85rem;
+        font-weight: 600;
+        color: rgba(255,255,255,0.8);
+    }
+
+    .car-360-footer .hint {
+        font-size: 0.8rem;
+        color: rgba(255,255,255,0.4);
+        display: flex;
+        align-items: center;
+        gap: 0.35rem;
+    }
+
+    .car-360-controls {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.75rem;
+        margin-top: 0.75rem;
+    }
+
+    .car-360-controls .dot {
+        width: 10px;
+        height: 10px;
+        border-radius: 50%;
+        background: rgba(255,255,255,0.2);
+        transition: all 0.3s;
+        cursor: pointer;
+    }
+
+    .car-360-controls .dot.active {
+        background: #3b82f6;
+        box-shadow: 0 0 10px rgba(59,130,246,0.5);
+        width: 28px;
+        border-radius: 5px;
+    }
+
+    .car-360-spin-btn {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        padding: 0.5rem 1rem;
+        border-radius: 10px;
+        font-size: 0.8rem;
+        font-weight: 600;
+        border: 1px solid rgba(255,255,255,0.15);
+        background: rgba(255,255,255,0.05);
+        color: rgba(255,255,255,0.7);
+        cursor: pointer;
+        transition: all 0.2s;
+        backdrop-filter: blur(4px);
+        margin-top: 0.5rem;
+    }
+
+    .car-360-spin-btn:hover {
+        background: rgba(255,255,255,0.1);
+        color: #fff;
+    }
+
+    .car-360-spin-btn.spinning {
+        background: rgba(59,130,246,0.2);
+        border-color: #3b82f6;
+        color: #60a5fa;
+    }
+
+    @media (max-width: 768px) {
+        .hero-title {
+            font-size: 2.5rem;
+        }
+        .cta-section {
+            padding: 2rem;
+        }
+        .car-360-badge {
+            width: 48px;
+            height: 48px;
+            font-size: 0.9rem;
+            top: 12px;
+            right: 12px;
+        }
+        .car-360-stage {
+            padding-bottom: 56%;
+        }
+    }
+</style>
+
+<!-- Hero Section -->
+<section class="hero-main">
+    <div class="container">
+        <div class="row align-items-center g-4">
+            <div class="col-lg-6 hero-content">
+                <span class="badge" style="background:rgba(59,130,246,0.2); color:#60a5fa; padding:0.5rem 1rem; font-size:0.85rem; border-radius:8px; margin-bottom:1.5rem;">
+                    <i class="bi bi-star-fill me-1"></i> Premium Car Showroom
+                </span>
+                <h1 class="hero-title text-white">
+                    Find Your<br><span>Perfect Drive</span>
+                </h1>
+                <p class="lead text-white-50 mb-0" style="font-size:1.15rem;">
+                    Explore our curated collection of premium vehicles. Book a test drive and experience your dream car today.
+                </p>
+
+                {% if user.is_staff %}
+                <a href="{% url 'admin_dashboard' %}" class="btn mt-3" style="background:linear-gradient(135deg,#f59e0b,#d97706); color:#fff; padding:0.75rem 1.75rem; border-radius:12px; font-weight:700; font-size:1rem; border:2px solid rgba(255,255,255,0.2);">
+                    <i class="bi bi-shield-lock-fill me-2"></i> Go to Admin Dashboard
+                </a>
+                {% endif %}
+
+                <div class="hero-search">
+                    <form method="get" action="{% url 'car_list' %}">
+                        <div class="row g-3">
+                            <div class="col-md-5">
+                                <input type="text" name="search" class="form-control" placeholder="Search by car name or brand...">
+                            </div>
+                            <div class="col-md-4">
+                                <select name="brand" class="form-select">
+                                    <option value="">All Brands</option>
+                                    {% for brand in brands %}
+                                    <option value="{{ brand.id }}">{{ brand.name }}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                            <div class="col-md-3">
+                                <button type="submit" class="btn w-100 h-100" style="background:linear-gradient(135deg,#3b82f6,#2563eb); color:#fff; border-radius:10px; font-weight:600;">
+                                    <i class="bi bi-search me-1"></i> Search
+                                </button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+            <div class="col-lg-6">
+                <div class="car-360-wrap">
+                    <div class="car-360-stage" id="car360Stage">
+                        <div class="car-360-box" id="car360Box">
+                            <div class="car-360-face front">
+                                {% if bmw_car_360 and bmw_car_360.image %}
+                                <img src="{{ bmw_car_360.image.url }}" alt="{{ bmw_car_360.brand.name }} {{ bmw_car_360.name }} 360 View" id="car360Img" draggable="false">
+                                {% else %}
+                                <div class="fallback-img">
+                                    <i class="bi bi-car-front-fill"></i>
+                                    <span>BMW 360° View</span>
+                                </div>
+                                {% endif %}
+                                <div class="car-360-reflection"></div>
+                            </div>
+                            <div class="car-360-face back">
+                                {% if bmw_car_360 and bmw_car_360.image %}
+                                <img src="{{ bmw_car_360.image.url }}" alt="{{ bmw_car_360.brand.name }} {{ bmw_car_360.name }}" draggable="false">
+                                {% else %}
+                                <div class="fallback-img">
+                                    <i class="bi bi-car-front-fill"></i>
+                                    <span>BMW</span>
+                                </div>
+                                {% endif %}
+                                <div class="car-360-reflection"></div>
+                            </div>
+                        </div>
+                        <div class="car-360-badge">360°</div>
+                    </div>
+                    <div class="car-360-footer">
+                        <span class="label">
+                            {% if bmw_car_360 %}
+                            <i class="bi bi-cpu me-1"></i>{{ bmw_car_360.brand.name }} {{ bmw_car_360.name }}
+                            {% else %}
+                            <i class="bi bi-cpu me-1"></i>BMW
+                            {% endif %}
+                        </span>
+                        <span class="hint"><i class="bi bi-arrows-move"></i> Drag to rotate</span>
+                    </div>
+                    <div class="car-360-controls" id="car360Controls">
+                        <span class="dot active"></span>
+                        <span class="dot"></span>
+                        <span class="dot"></span>
+                    </div>
+                    <div class="text-center">
+                        <button class="car-360-spin-btn" id="car360SpinBtn" type="button">
+                            <i class="bi bi-arrow-repeat"></i> Auto Spin
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Stats Bar -->
+<section class="container">
+    <div class="stats-bar">
+        <div class="row">
+            <div class="col-6 col-md-3">
+                <div class="stat-item">
+                    <div class="stat-number" style="color:#3b82f6;">{{ cars|length }}+</div>
+                    <div class="stat-label">Cars Available</div>
+                </div>
+            </div>
+            <div class="col-6 col-md-3">
+                <div class="stat-item">
+                    <div class="stat-number" style="color:#10b981;">{{ brands|length }}</div>
+                    <div class="stat-label">Premium Brands</div>
+                </div>
+            </div>
+            <div class="col-6 col-md-3">
+                <div class="stat-item">
+                    <div class="stat-number" style="color:#f59e0b;">24/7</div>
+                    <div class="stat-label">Online Booking</div>
+                </div>
+            </div>
+            <div class="col-6 col-md-3">
+                <div class="stat-item">
+                    <div class="stat-number" style="color:#8b5cf6;">100%</div>
+                    <div class="stat-label">Verified Cars</div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Featured Cars Section -->
+<section class="py-5 mt-4">
+    <div class="container">
+        <div class="text-center mb-5">
+            <h2 class="section-title">Featured Vehicles</h2>
+            <p class="section-subtitle">Handpicked cars ready for your next adventure</p>
+        </div>
+
+        {% if cars %}
+        <div class="row g-4">
+            {% for car in cars %}
+            <div class="col-lg-4 col-md-6">
+                <div class="car-card-premium">
+                    <div class="card-image-wrapper">
+                        {% if car.image %}
+                        <img src="{{ car.image.url }}" alt="{{ car }}">
+                        {% else %}
+                        <img src="{% static 'showroom/img/placeholder.svg' %}" alt="{{ car }}">
+                        {% endif %}
+                        <span class="brand-badge">{{ car.brand.name }}</span>
+                        <span class="price-tag">${{ car.price|floatformat:0 }}</span>
+                    </div>
+                    <div class="card-body">
+                        <h5 class="car-name">{{ car.name }}</h5>
+                        <p class="car-title">{{ car.title }}</p>
+                        <div class="car-action">
+                            <a href="{% url 'car_detail' car.id %}" class="btn-view-details">
+                                <i class="bi bi-eye me-1"></i> Details
+                            </a>
+                            {% if user.is_authenticated %}
+                            <a href="{% url 'book_test_drive' car.id %}" class="btn-book-now">
+                                <i class="bi bi-calendar-check me-1"></i> Book
+                            </a>
+                            {% else %}
+                            <a href="{% url 'login' %}?next={% url 'book_test_drive' car.id %}" class="btn-book-now">
+                                <i class="bi bi-box-arrow-in-right me-1"></i> Login
+                            </a>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+
+        <div class="text-center mt-5">
+            <a href="{% url 'car_list' %}" class="btn" style="background:linear-gradient(135deg,#0f172a,#1e293b); color:#fff; padding:0.875rem 2.5rem; border-radius:12px; font-weight:600; font-size:1rem;">
+                View All Cars <i class="bi bi-arrow-right ms-2"></i>
+            </a>
+        </div>
+        {% else %}
+        <div class="text-center py-5">
+            <i class="bi bi-car-front text-muted" style="font-size:4rem;"></i>
+            <p class="text-muted mt-3 fs-5">No cars available at the moment.</p>
+        </div>
+        {% endif %}
+    </div>
+</section>
+
+<!-- Brands Section with Showrooms -->
+<section class="py-5" style="background:#f8fafc;">
+    <div class="container">
+        <div class="text-center mb-5">
+            <h2 class="section-title">Our Brand Showrooms</h2>
+            <p class="section-subtitle">Find your nearest showroom and explore available cars</p>
+        </div>
+
+        <div class="row g-4">
+            {% for brand in brands %}
+            <div class="col-lg-6">
+                <div class="d-flex align-items-start p-4" style="background:#fff; border-radius:16px; border:1px solid #e2e8f0; transition:all 0.3s;" onmouseover="this.style.boxShadow='0 8px 16px rgba(0,0,0,0.08)'; this.style.transform='translateY(-4px)';" onmouseout="this.style.boxShadow='none'; this.style.transform='none';">
+                    <div style="width:60px; height:60px; background:linear-gradient(135deg, #3b82f6, #2563eb); border-radius:14px; display:flex; align-items:center; justify-content:center; color:#fff; font-size:1.75rem; font-weight:800; flex-shrink:0;">
+                        {{ brand.name.0|upper }}
+                    </div>
+                    <div class="ms-3 flex-1">
+                        <div class="d-flex align-items-center justify-content-between mb-2">
+                            <h5 class="fw-bold mb-0" style="color:#0f172a;">{{ brand.name }}</h5>
+                            <span class="badge" style="background:rgba(59,130,246,0.1); color:#3b82f6; font-size:0.75rem;">
+                                <i class="bi bi-car-front me-1"></i>{{ brand.cars.count }} Cars
+                            </span>
+                        </div>
+                        {% if brand.has_showroom %}
+                        <div class="mt-2">
+                            <div class="d-flex align-items-start mb-1" style="font-size:0.85rem;">
+                                <i class="bi bi-geo-alt-fill me-2 text-primary" style="margin-top:0.2rem;"></i>
+                                <div>
+                                    <strong style="color:#0f172a;">{{ brand.showroom_city }}</strong><br>
+                                    <span class="text-muted">{{ brand.showroom_location }}</span>
+                                </div>
+                            </div>
+                            <div class="d-flex align-items-center" style="font-size:0.85rem;">
+                                <i class="bi bi-telephone-fill me-2 text-primary"></i>
+                                <span class="text-muted">{{ brand.showroom_phone }}</span>
+                            </div>
+                        </div>
+                        {% else %}
+                        <div class="mt-2">
+                            <span class="text-muted" style="font-size:0.85rem;"><i class="bi bi-info-circle me-1"></i>Showroom location TBA</span>
+                        </div>
+                        {% endif %}
+                        <div class="mt-3 pt-2" style="border-top:1px solid #f1f5f9;">
+                            <a href="{% url 'car_list' %}?brand={{ brand.id }}" class="btn btn-sm" style="background:linear-gradient(135deg,#3b82f6,#2563eb); color:#fff; border-radius:8px; font-weight:600; font-size:0.85rem;">
+                                View Cars <i class="bi bi-arrow-right ms-1"></i>
+                            </a>
+                            <a href="{% url 'showroom_locations' %}" class="btn btn-sm" style="background:#f8fafc; color:#475569; border:1px solid #e2e8f0; border-radius:8px; font-weight:600; font-size:0.85rem; margin-left:0.5rem;">
+                                <i class="bi bi-geo-alt me-1"></i> All Locations
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</section>
+
+<!-- CTA Section -->
+<section class="py-5">
+    <div class="container">
+        <div class="cta-section">
+            <div class="row align-items-center position-relative" style="z-index:1;">
+                <div class="col-lg-8">
+                    <h2 class="text-white fw-bold mb-3" style="font-size:2rem;">Ready for a Test Drive?</h2>
+                    <p class="text-white-50 mb-0 fs-5">Create your free account to book test drives, manage your bookings, and get notified when your booking is approved.</p>
+                </div>
+                <div class="col-lg-4 text-lg-end mt-4 mt-lg-0">
+                    {% if not user.is_authenticated %}
+                    <a href="{% url 'register' %}" class="btn" style="background:linear-gradient(135deg,#3b82f6,#2563eb); color:#fff; padding:0.875rem 2rem; border-radius:12px; font-weight:600;">
+                        Create Account <i class="bi bi-arrow-right ms-2"></i>
+                    </a>
+                    {% else %}
+                    <a href="{% url 'car_list' %}" class="btn" style="background:linear-gradient(135deg,#3b82f6,#2563eb); color:#fff; padding:0.875rem 2rem; border-radius:12px; font-weight:600;">
+                        Book Test Drive <i class="bi bi-calendar-check ms-2"></i>
+                    </a>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<script>
+(function() {
+    'use strict';
+
+    var box = document.getElementById('car360Box');
+    var stage = document.getElementById('car360Stage');
+    var spinBtn = document.getElementById('car360SpinBtn');
+    var dots = document.querySelectorAll('#car360Controls .dot');
+    if (!box) return;
+
+    var angle = 0;
+    var isDragging = false;
+    var startX = 0;
+    var isSpinning = false;
+    var spinTimer = null;
+    var inactivityTimer = null;
+    var autoRotate = true;
+    var rafId = null;
+
+    function setAngle(deg) {
+        angle = deg % 360;
+        if (angle < 0) angle += 360;
+        box.style.transform = 'rotateY(' + angle + 'deg)';
+        updateDots();
+    }
+
+    function updateDots() {
+        var pos = Math.round((angle % 360) / 120) % 3;
+        if (pos < 0) pos += 3;
+        dots.forEach(function(d, i) {
+            d.classList.toggle('active', i === pos);
+        });
+    }
+
+    function startAutoRotate() {
+        if (isSpinning) return;
+        autoRotate = true;
+        function step() {
+            if (autoRotate && !isDragging) {
+                setAngle(angle + 0.25);
+                rafId = requestAnimationFrame(step);
+            } else if (autoRotate) {
+                rafId = requestAnimationFrame(step);
+            }
+        }
+        rafId = requestAnimationFrame(step);
+    }
+
+    function stopAutoRotate() {
+        autoRotate = false;
+        if (rafId) {
+            cancelAnimationFrame(rafId);
+            rafId = null;
+        }
+    }
+
+    function scheduleAutoRotate() {
+        clearTimeout(inactivityTimer);
+        stopAutoRotate();
+        inactivityTimer = setTimeout(function() {
+            if (!isSpinning) startAutoRotate();
+        }, 3000);
+    }
+
+    stage.addEventListener('mousedown', function(e) {
+        isDragging = true;
+        startX = e.clientX;
+        box.style.transition = 'none';
+        stopAutoRotate();
+        clearTimeout(inactivityTimer);
+    });
+
+    document.addEventListener('mousemove', function(e) {
+        if (isDragging) {
+            var delta = e.clientX - startX;
+            setAngle(angle + delta * 0.6);
+            startX = e.clientX;
+        }
+    });
+
+    document.addEventListener('mouseup', function() {
+        if (isDragging) {
+            isDragging = false;
+            box.style.transition = '';
+            scheduleAutoRotate();
+        }
+    });
+
+    stage.addEventListener('touchstart', function(e) {
+        isDragging = true;
+        startX = e.touches[0].clientX;
+        box.style.transition = 'none';
+        stopAutoRotate();
+        clearTimeout(inactivityTimer);
+    }, { passive: true });
+
+    stage.addEventListener('touchmove', function(e) {
+        if (isDragging) {
+            var delta = e.touches[0].clientX - startX;
+            setAngle(angle + delta * 0.6);
+            startX = e.touches[0].clientX;
+        }
+    }, { passive: true });
+
+    stage.addEventListener('touchend', function() {
+        if (isDragging) {
+            isDragging = false;
+            box.style.transition = '';
+            scheduleAutoRotate();
+        }
+    });
+
+    spinBtn.addEventListener('click', function() {
+        isSpinning = !isSpinning;
+        spinBtn.classList.toggle('spinning', isSpinning);
+        spinBtn.innerHTML = isSpinning
+            ? '<i class="bi bi-pause-fill"></i> Stop Spin'
+            : '<i class="bi bi-arrow-repeat"></i> Auto Spin';
+
+        if (isSpinning) {
+            stopAutoRotate();
+            clearTimeout(inactivityTimer);
+            var speed = 2;
+            function fastSpin() {
+                if (isSpinning) {
+                    setAngle(angle + speed);
+                    rafId = requestAnimationFrame(fastSpin);
+                }
+            }
+            rafId = requestAnimationFrame(fastSpin);
+        } else {
+            stopAutoRotate();
+            startAutoRotate();
+        }
+    });
+
+    dots.forEach(function(dot, i) {
+        dot.addEventListener('click', function() {
+            if (isSpinning) {
+                isSpinning = false;
+                spinBtn.classList.remove('spinning');
+                spinBtn.innerHTML = '<i class="bi bi-arrow-repeat"></i> Auto Spin';
+                stopAutoRotate();
+            }
+            setAngle(i * 120);
+            scheduleAutoRotate();
+        });
+    });
+
+    box.addEventListener('dragstart', function(e) { e.preventDefault(); });
+
+    startAutoRotate();
+
+})();
+</script>
+{% endblock %}

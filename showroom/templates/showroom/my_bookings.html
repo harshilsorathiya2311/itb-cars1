@@ -1,0 +1,56 @@
+{% extends 'showroom/base.html' %}
+
+{% block title %}My Bookings{% endblock %}
+
+{% block content %}
+<section class="py-5">
+    <div class="container">
+        <h2 class="mb-4">My Test Drive Bookings</h2>
+
+        {% if bookings %}
+        <div class="table-responsive">
+            <table class="table table-striped table-hover">
+                <thead class="table-dark">
+                    <tr>
+                        <th>Car</th>
+                        <th>Brand</th>
+                        <th>Booking Date</th>
+                        <th>Status</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for booking in bookings %}
+                    <tr>
+                        <td>
+                            <div class="d-flex align-items-center">
+                                {% if booking.car.image %}
+                                <img src="{{ booking.car.image.url }}" class="booking-car-thumb me-2" alt="{{ booking.car }}">
+                                {% endif %}
+                                <a href="{% url 'car_detail' booking.car.id %}">{{ booking.car.name }}</a>
+                            </div>
+                        </td>
+                        <td>{{ booking.car.brand.name }}</td>
+                        <td>{{ booking.booking_date|date:"F d, Y H:i" }}</td>
+                        <td>
+                            {% if booking.status == 'Approved' %}
+                            <span class="badge bg-success">{{ booking.status }}</span>
+                            {% elif booking.status == 'Rejected' %}
+                            <span class="badge bg-danger">{{ booking.status }}</span>
+                            {% else %}
+                            <span class="badge bg-warning text-dark">{{ booking.status }}</span>
+                            {% endif %}
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        {% else %}
+        <div class="alert alert-info">
+            <i class="bi bi-info-circle"></i> You haven't booked any test drives yet.
+            <a href="{% url 'car_list' %}" class="alert-link">Browse cars</a> to book one.
+        </div>
+        {% endif %}
+    </div>
+</section>
+{% endblock %}

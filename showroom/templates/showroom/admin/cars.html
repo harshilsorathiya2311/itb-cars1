@@ -1,0 +1,186 @@
+{% extends 'showroom/admin/base.html' %}
+
+{% block title %}Manage Cars{% endblock %}
+
+{% block page_title %}Manage Cars{% endblock %}
+
+{% block content %}
+<div class="row g-4">
+    <div class="col-lg-4">
+        <div class="admin-card sticky-top" style="top: 85px; z-index: 1;">
+            <div class="card-header">
+                <h5><i class="bi bi-plus-circle me-2 text-primary"></i>Add New Car</h5>
+            </div>
+            <div class="card-body">
+                <form method="post" enctype="multipart/form-data">
+                    {% csrf_token %}
+                    <input type="hidden" name="action" value="add">
+                    <div class="form-group">
+                        <label>Brand</label>
+                        <select name="brand_id" class="form-select form-select-admin" required>
+                            <option value="">Select Brand</option>
+                            {% for brand in brands %}
+                            <option value="{{ brand.id }}">{{ brand.name }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>Car Name</label>
+                        <input type="text" name="name" class="form-control form-control-admin" placeholder="e.g., Camry, 3 Series" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Price ($)</label>
+                        <input type="number" name="price" class="form-control form-control-admin" placeholder="e.g., 28000" step="0.01" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Title / Tagline</label>
+                        <input type="text" name="title" class="form-control form-control-admin" placeholder="e.g., Reliable Midsize Sedan" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Description</label>
+                        <textarea name="description" class="form-control form-control-admin" rows="3" required></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label>Image</label>
+                        <input type="file" name="image" class="form-control form-control-admin" accept="image/*">
+                    </div>
+                    <button type="submit" class="btn btn-admin btn-admin-primary w-100">
+                        <i class="bi bi-plus-lg me-1"></i> Add Car
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-lg-8">
+        <div class="admin-card">
+            <div class="card-header">
+                <h5><i class="bi bi-car-front me-2 text-primary"></i>All Cars</h5>
+                <span class="badge" style="background:#f1f5f9;color:#475569;">{{ cars.count }} total</span>
+            </div>
+            <div class="table-responsive">
+                <table class="admin-table">
+                    <thead>
+                        <tr>
+                            <th>Image</th>
+                            <th>Car Name</th>
+                            <th>Brand</th>
+                            <th>Price</th>
+                            <th style="width: 120px;">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for car in cars %}
+                        <tr>
+                            <td>
+                                {% if car.image %}
+                                <img src="{{ car.image.url }}" width="80" height="55" style="object-fit:cover;border-radius:8px;" alt="{{ car }}">
+                                {% else %}
+                                <div class="d-flex align-items-center justify-content-center bg-light" style="width:80px;height:55px;border-radius:8px;">
+                                    <i class="bi bi-image text-muted"></i>
+                                </div>
+                                {% endif %}
+                            </td>
+                            <td>
+                                <div class="fw-semibold" style="font-size:0.95rem;">{{ car.name }}</div>
+                                <small class="text-muted">{{ car.title|truncatechars:35 }}</small>
+                            </td>
+                            <td>
+                                <span class="badge" style="background:rgba(99,102,241,0.1);color:#6366f1;">{{ car.brand.name }}</span>
+                            </td>
+                            <td>
+                                <span class="fw-semibold" style="color:#10b981;">${{ car.price }}</span>
+                            </td>
+                            <td>
+                                <div class="d-flex gap-1">
+                                    <button class="btn btn-sm btn-admin-outline" data-bs-toggle="modal" data-bs-target="#editModal{{ car.id }}">
+                                        <i class="bi bi-pencil"></i>
+                                    </button>
+                                    <form method="post" class="d-inline">
+                                        {% csrf_token %}
+                                        <input type="hidden" name="action" value="delete">
+                                        <input type="hidden" name="car_id" value="{{ car.id }}">
+                                        <button type="submit" class="btn btn-sm btn-admin-outline text-danger" onclick="return confirm('Delete {{ car.brand.name }} {{ car.name }}?')">
+                                            <i class="bi bi-trash"></i>
+                                        </button>
+                                    </form>
+                                </div>
+
+                                <div class="modal fade" id="editModal{{ car.id }}" tabindex="-1">
+                                    <div class="modal-dialog modal-lg">
+                                        <div class="modal-content">
+                                            <div class="modal-header">
+                                                <h5 class="modal-title fw-semibold">Edit Car: {{ car.name }}</h5>
+                                                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                                            </div>
+                                            <form method="post" enctype="multipart/form-data">
+                                                {% csrf_token %}
+                                                <input type="hidden" name="action" value="edit">
+                                                <input type="hidden" name="car_id" value="{{ car.id }}">
+                                                <div class="modal-body">
+                                                    <div class="row g-3">
+                                                        <div class="col-md-6">
+                                                            <div class="form-group mb-2">
+                                                                <label>Brand</label>
+                                                                <select name="brand_id" class="form-select form-select-admin" required>
+                                                                    {% for brand in brands %}
+                                                                    <option value="{{ brand.id }}" {% if car.brand.id == brand.id %}selected{% endif %}>{{ brand.name }}</option>
+                                                                    {% endfor %}
+                                                                </select>
+                                                            </div>
+                                                        </div>
+                                                        <div class="col-md-6">
+                                                            <div class="form-group mb-2">
+                                                                <label>Car Name</label>
+                                                                <input type="text" name="name" class="form-control form-control-admin" value="{{ car.name }}" required>
+                                                            </div>
+                                                        </div>
+                                                        <div class="col-md-6">
+                                                            <div class="form-group mb-2">
+                                                                <label>Price ($)</label>
+                                                                <input type="number" name="price" class="form-control form-control-admin" value="{{ car.price }}" step="0.01" required>
+                                                            </div>
+                                                        </div>
+                                                        <div class="col-md-6">
+                                                            <div class="form-group mb-2">
+                                                                <label>Title</label>
+                                                                <input type="text" name="title" class="form-control form-control-admin" value="{{ car.title }}" required>
+                                                            </div>
+                                                        </div>
+                                                        <div class="col-12">
+                                                            <div class="form-group mb-2">
+                                                                <label>Description</label>
+                                                                <textarea name="description" class="form-control form-control-admin" rows="3" required>{{ car.description }}</textarea>
+                                                            </div>
+                                                        </div>
+                                                        <div class="col-12">
+                                                            <div class="form-group mb-0">
+                                                                <label>Change Image (optional)</label>
+                                                                <input type="file" name="image" class="form-control form-control-admin" accept="image/*">
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class="modal-footer">
+                                                    <button type="button" class="btn btn-admin btn-admin-outline" data-bs-dismiss="modal">Cancel</button>
+                                                    <button type="submit" class="btn btn-admin btn-admin-primary">Save Changes</button>
+                                                </div>
+                                            </form>
+                                        </div>
+                                    </div>
+                                </div>
+                            </td>
+                        </tr>
+                        {% empty %}
+                        <tr><td colspan="5" class="text-center py-5">
+                            <i class="bi bi-car-front text-muted" style="font-size:3rem;"></i>
+                            <p class="text-muted mt-2">No cars found. Add your first car.</p>
+                        </td></tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

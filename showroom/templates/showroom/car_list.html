@@ -1,0 +1,361 @@
+{% extends 'showroom/base.html' %}
+{% load static %}
+
+{% block title %}All Cars{% endblock %}
+
+{% block content %}
+<style>
+    .page-hero {
+        background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+        padding: 3rem 0;
+        margin-bottom: 2rem;
+    }
+
+    .page-hero h1 {
+        color: #fff;
+        font-weight: 800;
+        font-size: 2rem;
+    }
+
+    .page-hero p {
+        color: #94a3b8;
+    }
+
+    .filter-bar {
+        background: #fff;
+        border-radius: 16px;
+        padding: 1.5rem;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.06);
+        border: 1px solid #e2e8f0;
+        margin-bottom: 2rem;
+    }
+
+    .filter-bar label {
+        font-size: 0.8rem;
+        font-weight: 600;
+        color: #475569;
+        margin-bottom: 0.4rem;
+    }
+
+    .filter-bar .form-control,
+    .filter-bar .form-select {
+        border: 2px solid #e2e8f0;
+        border-radius: 10px;
+        padding: 0.65rem 1rem;
+        font-size: 0.875rem;
+        transition: all 0.2s;
+    }
+
+    .filter-bar .form-control:focus,
+    .filter-bar .form-select:focus {
+        border-color: #3b82f6;
+        box-shadow: 0 0 0 3px rgba(59,130,246,0.1);
+    }
+
+    .filter-bar .input-group {
+        position: relative;
+    }
+
+    .filter-bar .input-group .search-icon {
+        position: absolute;
+        left: 12px;
+        top: 50%;
+        transform: translateY(-50%);
+        color: #94a3b8;
+        font-size: 0.9rem;
+        z-index: 10;
+    }
+
+    .filter-bar .input-group .form-control {
+        padding-left: 2.5rem;
+    }
+
+    .active-filters {
+        background: #f8fafc;
+        border-radius: 10px;
+        padding: 0.75rem 1rem;
+        margin-bottom: 1.5rem;
+        font-size: 0.85rem;
+    }
+
+    .filter-badge {
+        display: inline-block;
+        background: rgba(59,130,246,0.1);
+        color: #3b82f6;
+        padding: 0.3rem 0.75rem;
+        border-radius: 6px;
+        font-weight: 600;
+        font-size: 0.8rem;
+        margin-right: 0.5rem;
+        margin-bottom: 0.25rem;
+    }
+
+    .filter-badge .btn-remove {
+        background: none;
+        border: none;
+        color: #3b82f6;
+        font-size: 1rem;
+        line-height: 1;
+        padding: 0 0 0 0.25rem;
+        cursor: pointer;
+    }
+
+    .car-grid-card {
+        border: none;
+        border-radius: 16px;
+        overflow: hidden;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.04);
+        background: #fff;
+        transition: all 0.3s;
+        height: 100%;
+        border: 1px solid #e2e8f0;
+    }
+
+    .car-grid-card:hover {
+        transform: translateY(-6px);
+        box-shadow: 0 12px 24px rgba(0,0,0,0.08);
+    }
+
+    .car-grid-card .card-img-wrap {
+        position: relative;
+        height: 200px;
+        overflow: hidden;
+    }
+
+    .car-grid-card .card-img-wrap img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        transition: transform 0.4s;
+    }
+
+    .car-grid-card:hover .card-img-wrap img {
+        transform: scale(1.05);
+    }
+
+    .car-grid-card .brand-tag {
+        position: absolute;
+        top: 10px;
+        left: 10px;
+        background: rgba(15,23,42,0.8);
+        backdrop-filter: blur(4px);
+        color: #fff;
+        padding: 0.3rem 0.65rem;
+        border-radius: 6px;
+        font-size: 0.7rem;
+        font-weight: 600;
+        letter-spacing: 0.5px;
+    }
+
+    .car-grid-card .price-badge {
+        position: absolute;
+        bottom: 10px;
+        right: 10px;
+        background: linear-gradient(135deg, #3b82f6, #2563eb);
+        color: #fff;
+        padding: 0.35rem 0.75rem;
+        border-radius: 8px;
+        font-weight: 700;
+        font-size: 0.95rem;
+    }
+
+    .car-grid-card .card-body {
+        padding: 1rem 1.25rem;
+    }
+
+    .car-grid-card .car-title {
+        font-weight: 700;
+        font-size: 1.05rem;
+        color: #0f172a;
+        margin-bottom: 0.25rem;
+    }
+
+    .car-grid-card .car-subtitle {
+        font-size: 0.8rem;
+        color: #64748b;
+        margin-bottom: 0.75rem;
+    }
+
+    .car-grid-card .btn-details {
+        display: block;
+        text-align: center;
+        padding: 0.55rem;
+        border-radius: 8px;
+        font-weight: 600;
+        font-size: 0.85rem;
+        border: 1px solid #e2e8f0;
+        color: #475569;
+        text-decoration: none;
+        transition: all 0.2s;
+    }
+
+    .car-grid-card .btn-details:hover {
+        background: #f8fafc;
+        border-color: #cbd5e1;
+    }
+
+    .car-grid-card .btn-book {
+        display: block;
+        text-align: center;
+        padding: 0.55rem;
+        border-radius: 8px;
+        font-weight: 600;
+        font-size: 0.85rem;
+        border: none;
+        background: linear-gradient(135deg, #3b82f6, #2563eb);
+        color: #fff;
+        text-decoration: none;
+        transition: all 0.2s;
+    }
+
+    .car-grid-card .btn-book:hover {
+        background: linear-gradient(135deg, #2563eb, #1d4ed8);
+        color: #fff;
+    }
+
+    .results-count {
+        font-size: 0.9rem;
+        color: #64748b;
+    }
+
+    .results-count strong {
+        color: #0f172a;
+    }
+</style>
+
+<div class="page-hero">
+    <div class="container">
+        <div class="row align-items-center">
+            <div class="col">
+                <h1><i class="bi bi-car-front me-2"></i>All Cars</h1>
+                <p class="mb-0">Browse our complete collection of premium vehicles</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="container">
+    <!-- Filter Bar -->
+    <div class="filter-bar">
+        <form method="get" action="{% url 'car_list' %}" class="row g-3 align-items-end">
+            <div class="col-md-5">
+                <label class="form-label fw-semibold"><i class="bi bi-search me-1"></i>Search Cars</label>
+                <div class="input-group">
+                    <span class="search-icon"><i class="bi bi-search"></i></span>
+                    <input type="text" name="search" class="form-control" placeholder="Search by name, brand, or description..." value="{{ search_query }}">
+                </div>
+            </div>
+            <div class="col-md-4">
+                <label class="form-label fw-semibold"><i class="bi bi-car-front me-1"></i>Brand</label>
+                <select name="brand" class="form-select">
+                    <option value="">All Brands</option>
+                    {% for brand in brands %}
+                    <option value="{{ brand.id }}" {% if selected_brand == brand.id|stringformat:"s" %}selected{% endif %}>{{ brand.name }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="col-md-3">
+                <button type="submit" class="btn w-100" style="background:linear-gradient(135deg,#3b82f6,#2563eb); color:#fff; border-radius:10px; font-weight:600; padding:0.65rem;">
+                    <i class="bi bi-search"></i> Search
+                </button>
+            </div>
+        </form>
+        {% if search_query or selected_brand %}
+        <div class="mt-3 pt-3" style="border-top:1px solid #f1f5f9;">
+            <small class="text-muted me-2">Active filters:</small>
+            {% if search_query %}
+            <span class="filter-badge">
+                Search: "{{ search_query }}"
+                <a href="{% url 'car_list' %}?{% if selected_brand %}brand={{ selected_brand }}{% endif %}" class="btn-remove">&times;</a>
+            </span>
+            {% endif %}
+            {% if selected_brand %}
+            <span class="filter-badge">
+                Brand: {% for brand in brands %}{% if brand.id == selected_brand|add:0 %}{{ brand.name }}{% endif %}{% endfor %}
+                <a href="{% url 'car_list' %}?{% if search_query %}search={{ search_query }}{% endif %}" class="btn-remove">&times;</a>
+            </span>
+            {% endif %}
+            <a href="{% url 'car_list' %}" class="btn btn-sm ms-2" style="background:#f8fafc; color:#475569; border:1px solid #e2e8f0; border-radius:6px; font-size:0.75rem;">
+                <i class="bi bi-x-circle me-1"></i>Clear All
+            </a>
+        </div>
+        {% endif %}
+    </div>
+
+    <!-- Results -->
+    {% if cars %}
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <p class="results-count mb-0">Showing <strong>{{ cars.count }}</strong> car{{ cars.count|pluralize }}</p>
+            {% if price_range.min_price and price_range.max_price %}
+            <small class="text-muted">Price range: ${{ price_range.min_price|floatformat:0 }} - ${{ price_range.max_price|floatformat:0 }}</small>
+            {% endif %}
+        </div>
+        <div class="d-flex gap-2">
+            {% if search_query or selected_brand %}
+            <a href="{% url 'car_list' %}" class="btn btn-sm btn-outline-secondary" style="border-radius:8px;">
+                <i class="bi bi-x-circle me-1"></i> Clear All Filters
+            </a>
+            {% endif %}
+            <div class="dropdown">
+                <button class="btn btn-sm btn-outline-primary dropdown-toggle" type="button" data-bs-toggle="dropdown" style="border-radius:8px;">
+                    <i class="bi bi-sort-down me-1"></i>Sort
+                </button>
+                <ul class="dropdown-menu">
+                    <li><a class="dropdown-item" href="?{% if search_query %}search={{ search_query }}&{% endif %}{% if selected_brand %}brand={{ selected_brand }}&{% endif %}sort=price_asc">Price: Low to High</a></li>
+                    <li><a class="dropdown-item" href="?{% if search_query %}search={{ search_query }}&{% endif %}{% if selected_brand %}brand={{ selected_brand }}&{% endif %}sort=price_desc">Price: High to Low</a></li>
+                    <li><a class="dropdown-item" href="?{% if search_query %}search={{ search_query }}&{% endif %}{% if selected_brand %}brand={{ selected_brand }}&{% endif %}sort=name">Name A-Z</a></li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <div class="row g-4">
+        {% for car in cars %}
+        <div class="col-lg-3 col-md-4 col-sm-6">
+            <div class="car-grid-card">
+                <div class="card-img-wrap">
+                    {% if car.image %}
+                    <img src="{{ car.image.url }}" alt="{{ car }}">
+                    {% else %}
+                    <img src="{% static 'showroom/img/placeholder.svg' %}" alt="{{ car }}">
+                    {% endif %}
+                    <span class="brand-tag">{{ car.brand.name }}</span>
+                    <span class="price-badge">${{ car.price|floatformat:0 }}</span>
+                </div>
+                <div class="card-body">
+                    <h5 class="car-title">{{ car.name }}</h5>
+                    <p class="car-subtitle">{{ car.title|truncatechars:40 }}</p>
+                    <div class="d-flex gap-2">
+                        <a href="{% url 'car_detail' car.id %}" class="btn-details flex-fill">
+                            <i class="bi bi-eye me-1"></i> Details
+                        </a>
+                        {% if user.is_authenticated %}
+                        <a href="{% url 'book_test_drive' car.id %}" class="btn-book flex-fill">
+                            <i class="bi bi-calendar-check me-1"></i> Book
+                        </a>
+                        {% else %}
+                        <a href="{% url 'login' %}?next={% url 'book_test_drive' car.id %}" class="btn-book flex-fill">
+                            <i class="bi bi-box-arrow-in-right me-1"></i> Login
+                        </a>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+    {% else %}
+    <div class="text-center py-5">
+        <div style="width:100px; height:100px; background:#f8fafc; border-radius:50%; display:flex; align-items:center; justify-content:center; margin:0 auto;">
+            <i class="bi bi-search" style="font-size:2.5rem; color:#94a3b8;"></i>
+        </div>
+        <h4 class="mt-3 fw-bold" style="color:#0f172a;">No cars found</h4>
+        <p class="text-muted">Try adjusting your search or filter criteria</p>
+        <a href="{% url 'car_list' %}" class="btn" style="background:linear-gradient(135deg,#3b82f6,#2563eb); color:#fff; border-radius:10px; font-weight:600;">
+            <i class="bi bi-arrow-left me-1"></i> View All Cars
+        </a>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}

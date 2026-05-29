@@ -1,0 +1,141 @@
+{% extends 'showroom/admin/base.html' %}
+
+{% block title %}Manage Brands{% endblock %}
+
+{% block page_title %}Manage Brands{% endblock %}
+
+{% block content %}
+<div class="row g-4">
+    <div class="col-lg-4">
+        <div class="admin-card sticky-top" style="top: 85px; z-index: 1;">
+            <div class="card-header">
+                <h5><i class="bi bi-plus-circle me-2 text-primary"></i>Add New Brand</h5>
+            </div>
+            <div class="card-body">
+                <form method="post">
+                    {% csrf_token %}
+                    <input type="hidden" name="action" value="add">
+                    <div class="form-group">
+                        <label>Brand Name</label>
+                        <input type="text" name="name" class="form-control form-control-admin" placeholder="e.g., Toyota, BMW, Tesla" required>
+                    </div>
+                    <button type="submit" class="btn btn-admin btn-admin-primary w-100">
+                        <i class="bi bi-plus-lg me-1"></i> Add Brand
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-lg-8">
+        <div class="admin-card">
+            <div class="card-header">
+                <h5><i class="bi bi-bookmark me-2 text-primary"></i>All Brands</h5>
+                <span class="badge" style="background:#f1f5f9;color:#475569;">{{ brands.count }} total</span>
+            </div>
+            <div class="table-responsive">
+                <table class="admin-table">
+                    <thead>
+                        <tr>
+                            <th>#</th>
+                            <th>Brand Name</th>
+                            <th>Showroom</th>
+                            <th>Cars</th>
+                            <th style="width: 160px;">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for brand in brands %}
+                        <tr>
+                            <td>
+                                <span class="fw-semibold text-muted">{{ brand.id }}</span>
+                            </td>
+                            <td>
+                                <div class="d-flex align-items-center gap-3">
+                                    <div class="rounded-2 d-flex align-items-center justify-content-center" style="width:40px;height:40px;background:linear-gradient(135deg,rgba(99,102,241,0.1),rgba(139,92,246,0.1));color:#6366f1;font-weight:700;">
+                                        {{ brand.name|make_list|first|upper }}
+                                    </div>
+                                    <span class="fw-semibold" style="font-size:1rem;">{{ brand.name }}</span>
+                                </div>
+                            </td>
+                            <td>
+                                {% if brand.showroom_city %}
+                                <span style="font-size:0.85rem;">{{ brand.showroom_city }}</span>
+                                {% else %}
+                                <span class="text-muted" style="font-size:0.85rem;">—</span>
+                                {% endif %}
+                            </td>
+                            <td>
+                                {% if brand.car_count > 0 %}
+                                <span class="badge" style="background:rgba(16,185,129,0.1);color:#10b981;">{{ brand.car_count }} car{{ brand.car_count|pluralize }}</span>
+                                {% else %}
+                                <span class="text-muted">No cars</span>
+                                {% endif %}
+                            </td>
+                            <td>
+                                <div class="d-flex gap-1">
+                                    <button class="btn btn-sm btn-admin-outline" data-bs-toggle="modal" data-bs-target="#editModal{{ brand.id }}">
+                                        <i class="bi bi-pencil"></i>
+                                    </button>
+                                    <form method="post" class="d-inline">
+                                        {% csrf_token %}
+                                        <input type="hidden" name="action" value="delete">
+                                        <input type="hidden" name="brand_id" value="{{ brand.id }}">
+                                        <button type="submit" class="btn btn-sm btn-admin-outline text-danger" onclick="return confirm('Delete {{ brand.name }}? This cannot be undone if it has cars.')">
+                                            <i class="bi bi-trash"></i>
+                                        </button>
+                                    </form>
+                                </div>
+
+                                <div class="modal fade" id="editModal{{ brand.id }}" tabindex="-1">
+                                    <div class="modal-dialog">
+                                        <div class="modal-content">
+                                            <div class="modal-header">
+                                                <h5 class="modal-title fw-semibold">Edit Brand</h5>
+                                                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                                            </div>
+                                            <form method="post">
+                                                {% csrf_token %}
+                                                <input type="hidden" name="action" value="edit">
+                                                <input type="hidden" name="brand_id" value="{{ brand.id }}">
+                                                <div class="modal-body">
+                                                    <div class="form-group">
+                                                        <label>Brand Name</label>
+                                                        <input type="text" name="name" class="form-control form-control-admin" value="{{ brand.name }}" required>
+                                                    </div>
+                                                    <div class="form-group mt-3">
+                                                        <label>Showroom Address</label>
+                                                        <textarea name="showroom_location" class="form-control form-control-admin" rows="2">{{ brand.showroom_location }}</textarea>
+                                                    </div>
+                                                    <div class="form-group mt-3">
+                                                        <label>Showroom City</label>
+                                                        <input type="text" name="showroom_city" class="form-control form-control-admin" value="{{ brand.showroom_city }}">
+                                                    </div>
+                                                    <div class="form-group mt-3">
+                                                        <label>Showroom Phone</label>
+                                                        <input type="text" name="showroom_phone" class="form-control form-control-admin" value="{{ brand.showroom_phone }}">
+                                                    </div>
+                                                </div>
+                                                <div class="modal-footer">
+                                                    <button type="button" class="btn btn-admin btn-admin-outline" data-bs-dismiss="modal">Cancel</button>
+                                                    <button type="submit" class="btn btn-admin btn-admin-primary">Save Changes</button>
+                                                </div>
+                                            </form>
+                                        </div>
+                                    </div>
+                                </div>
+                            </td>
+                        </tr>
+                        {% empty %}
+                        <tr><td colspan="5" class="text-center py-5">
+                            <i class="bi bi-bookmark-x text-muted" style="font-size:3rem;"></i>
+                            <p class="text-muted mt-2">No brands found. Add your first brand.</p>
+                        </td></tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

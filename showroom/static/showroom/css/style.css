@@ -1,0 +1,201 @@
+/* Car Cards */
+.car-card-img {
+    height: 200px;
+    object-fit: cover;
+}
+
+.car-detail-img {
+    height: 400px;
+    object-fit: cover;
+}
+
+.booking-car-thumb {
+    width: 80px;
+    height: 50px;
+    object-fit: cover;
+    border-radius: 4px;
+}
+
+@media (max-width: 768px) {
+    .car-card-img {
+        height: 150px;
+    }
+    .car-detail-img {
+        height: 250px;
+    }
+}
+
+/* Auth Pages */
+.auth-section {
+    min-height: calc(100vh - 200px);
+    display: flex;
+    align-items: center;
+    padding: 3rem 0;
+    background: linear-gradient(135deg, #f5f7fa 0%, #e4e8f0 100%);
+}
+
+.auth-card {
+    border: none;
+    border-radius: 16px;
+    overflow: hidden;
+    background: #fff;
+}
+
+.auth-card-header {
+    background: linear-gradient(135deg, #0d6efd, #0a58ca);
+    color: #fff;
+    text-align: center;
+    padding: 2.5rem 2rem 2rem;
+}
+
+.auth-logo {
+    width: 70px;
+    height: 70px;
+    background: rgba(255, 255, 255, 0.2);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 1rem;
+    font-size: 2rem;
+}
+
+.auth-title {
+    font-size: 1.75rem;
+    font-weight: 700;
+    margin-bottom: 0.5rem;
+}
+
+.auth-subtitle {
+    font-size: 0.95rem;
+    opacity: 0.9;
+    margin-bottom: 0;
+}
+
+.auth-card-body {
+    padding: 2rem 2.5rem 2.5rem;
+}
+
+.auth-card-body .form-group {
+    margin-bottom: 1.25rem;
+}
+
+.auth-card-body .form-label {
+    font-weight: 600;
+    font-size: 0.9rem;
+    color: #374151;
+    margin-bottom: 0.4rem;
+}
+
+.auth-card-body .form-label i {
+    color: #0d6efd;
+    margin-right: 0.3rem;
+}
+
+.auth-card-body .form-control {
+    border: 2px solid #e5e7eb;
+    border-radius: 8px;
+    padding: 0.7rem 1rem;
+    font-size: 0.95rem;
+    transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.auth-card-body .form-control:focus {
+    border-color: #0d6efd;
+    box-shadow: 0 0 0 3px rgba(13, 110, 253, 0.15);
+}
+
+.auth-card-body .form-control.is-invalid {
+    border-color: #dc3545;
+}
+
+.auth-card-body .form-text {
+    font-size: 0.8rem;
+}
+
+.btn-auth {
+    background: linear-gradient(135deg, #0d6efd, #0a58ca);
+    border: none;
+    border-radius: 8px;
+    padding: 0.8rem;
+    font-size: 1rem;
+    font-weight: 600;
+    color: #fff;
+    transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.btn-auth:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(13, 110, 253, 0.4);
+    color: #fff;
+}
+
+.btn-auth:active {
+    transform: translateY(0);
+}
+
+.btn-auth-outline {
+    border: 2px solid #0d6efd;
+    border-radius: 8px;
+    padding: 0.75rem;
+    font-size: 0.95rem;
+    font-weight: 600;
+    color: #0d6efd;
+    background: transparent;
+    transition: all 0.2s;
+}
+
+.btn-auth-outline:hover {
+    background: #0d6efd;
+    color: #fff;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(13, 110, 253, 0.3);
+}
+
+.auth-divider {
+    text-align: center;
+    margin: 1.5rem 0;
+    position: relative;
+}
+
+.auth-divider::before {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 0;
+    right: 0;
+    height: 1px;
+    background: #e5e7eb;
+}
+
+.auth-divider span {
+    position: relative;
+    background: #fff;
+    padding: 0 1rem;
+    color: #6b7280;
+    font-size: 0.9rem;
+}
+
+@media (max-width: 768px) {
+    .auth-card-body {
+        padding: 1.5rem;
+    }
+    .auth-card-header {
+        padding: 2rem 1.5rem 1.5rem;
+    }
+    .auth-title {
+        font-size: 1.5rem;
+    }
+}
+
+.admin-header {
+    background: linear-gradient(135deg, #1a1d23, #2d3139) !important;
+}
+
+/* Admin Table Thumbnails */
+.booking-car-thumb {
+    width: 80px;
+    height: 50px;
+    object-fit: cover;
+    border-radius: 4px;
+}

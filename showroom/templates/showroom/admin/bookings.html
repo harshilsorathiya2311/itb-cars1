@@ -1,0 +1,100 @@
+{% extends 'showroom/admin/base.html' %}
+
+{% block title %}Manage Bookings{% endblock %}
+
+{% block page_title %}Manage Bookings{% endblock %}
+
+{% block content %}
+<div class="admin-card">
+    <div class="card-header">
+        <h5><i class="bi bi-calendar2-check me-2 text-primary"></i>All Bookings</h5>
+        <div class="d-flex gap-2 flex-wrap">
+            <a href="?" class="btn btn-sm {% if not status_filter %}btn-admin-primary{% else %}btn-admin-outline{% endif %}">All ({{ bookings_total }})</a>
+            <a href="?status=Pending" class="btn btn-sm {% if status_filter == 'Pending' %}btn-warning{% else %}btn-admin-outline{% endif %}">Pending ({{ pending_count }})</a>
+            <a href="?status=Approved" class="btn btn-sm {% if status_filter == 'Approved' %}btn-success{% else %}btn-admin-outline{% endif %}">Approved ({{ approved_count }})</a>
+            <a href="?status=Rejected" class="btn btn-sm {% if status_filter == 'Rejected' %}btn-danger{% else %}btn-admin-outline{% endif %}">Rejected ({{ rejected_count }})</a>
+        </div>
+    </div>
+    <div class="table-responsive">
+        <table class="admin-table">
+            <thead>
+                <tr>
+                    <th>#</th>
+                    <th>User</th>
+                    <th>Contact</th>
+                    <th>Vehicle</th>
+                    <th>Booking Date</th>
+                    <th>Status</th>
+                    <th style="width: 180px;">Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for booking in bookings %}
+                <tr>
+                    <td><span class="fw-semibold text-muted">#{{ booking.id }}</span></td>
+                    <td>
+                        <div class="d-flex align-items-center gap-2">
+                            <div class="rounded-circle d-flex align-items-center justify-content-center" style="width:34px;height:34px;background:rgba(59,130,246,0.1);color:#3b82f6;font-weight:600;font-size:0.75rem;">
+                                {{ booking.user.username|make_list|first|upper }}
+                            </div>
+                            <span class="fw-semibold">{{ booking.user.username }}</span>
+                        </div>
+                    </td>
+                    <td>
+                        <div class="fw-semibold" style="font-size:0.85rem;">{{ booking.user.email|default:"N/A" }}</div>
+                        <small class="text-muted"><i class="bi bi-telephone me-1"></i>{{ booking.user.profile.phone_number|default:"N/A" }}</small>
+                    </td>
+                    <td>
+                        <div class="d-flex align-items-center gap-2">
+                            {% if booking.car.image %}
+                            <img src="{{ booking.car.image.url }}" width="55" height="38" style="object-fit:cover;border-radius:6px;" alt="{{ booking.car }}">
+                            {% endif %}
+                            <span class="fw-semibold">{{ booking.car.brand.name }} {{ booking.car.name }}</span>
+                        </div>
+                    </td>
+                    <td class="text-muted">{{ booking.booking_date|date:"M d, Y" }}<br><small>{{ booking.booking_date|time:"H:i" }}</small></td>
+                    <td>
+                        {% if booking.status == 'Pending' %}
+                        <span class="badge" style="background:rgba(245,158,11,0.15);color:#d97706;">Pending</span>
+                        {% elif booking.status == 'Approved' %}
+                        <span class="badge" style="background:rgba(16,185,129,0.15);color:#059669;">Approved</span>
+                        {% else %}
+                        <span class="badge" style="background:rgba(239,68,68,0.15);color:#dc2626;">Rejected</span>
+                        {% endif %}
+                    </td>
+                    <td>
+                        {% if booking.status == 'Pending' %}
+                        <div class="d-flex gap-1">
+                            <form method="post" class="d-inline">
+                                {% csrf_token %}
+                                <input type="hidden" name="booking_id" value="{{ booking.id }}">
+                                <input type="hidden" name="action" value="approve">
+                                <button type="submit" class="btn btn-sm" style="background:rgba(16,185,129,0.1);color:#059669;border:1px solid rgba(16,185,129,0.2);border-radius:6px;" title="Approve & Send SMS">
+                                    <i class="bi bi-check-lg"></i> Approve
+                                </button>
+                            </form>
+                            <form method="post" class="d-inline">
+                                {% csrf_token %}
+                                <input type="hidden" name="booking_id" value="{{ booking.id }}">
+                                <input type="hidden" name="action" value="reject">
+                                <button type="submit" class="btn btn-sm" style="background:rgba(239,68,68,0.1);color:#dc2626;border:1px solid rgba(239,68,68,0.2);border-radius:6px;" title="Reject & Send SMS">
+                                    <i class="bi bi-x-lg"></i> Reject
+                                </button>
+                            </form>
+                        </div>
+                        {% else %}
+                        <small class="text-muted">Completed</small>
+                        {% endif %}
+                    </td>
+                </tr>
+                {% empty %}
+                <tr><td colspan="7" class="text-center py-5">
+                    <i class="bi bi-calendar-x text-muted" style="font-size:3rem;"></i>
+                    <p class="text-muted mt-2">No bookings found</p>
+                </td></tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}
