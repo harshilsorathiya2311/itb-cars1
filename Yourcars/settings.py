@@ -11,16 +11,18 @@ load_dotenv()
 BASE_DIR = Path(__file__).resolve().parent.parent
 
 # SECURITY KEY
-SECRET_KEY = os.getenv(
-    'DJANGO_SECRET_KEY',
-    'django-insecure-change-this-in-production-!!'
-)
+SECRET_KEY = os.getenv("SECRET_KEY", "unsafe-dev-key")
 
 # DEBUG MODE
 DEBUG = False
 
 # ALLOWED HOSTS
-ALLOWED_HOSTS = ['*']
+ALLOWED_HOSTS = [
+    "127.0.0.1",
+    "localhost",
+    ".onrender.com",
+    "itb-cars1.onrender.com"
+]
 
 # CSRF TRUSTED ORIGINS
 CSRF_TRUSTED_ORIGINS = [
